@@ -1,4 +1,4 @@
-;;; org-trello-controller.el --- Controller of org-trello mode
+;;; org-trello-controller.el --- Controller of org-trello mode  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2021  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -20,10 +20,6 @@
 
 ;;; Commentary:
 ;;; Code:
-
-(if (version< emacs-version "27")
-    (eval-when-compile (require 'cl))
-  (eval-when-compile (require 'cl-lib)))
 
 (require 'org-trello-setup)
 (require 'org-trello-log)
@@ -70,7 +66,7 @@ If either org-keywords or properties is nil, return an empty hash-map."
                    (orgtrello-hash-empty-hash)
                    org-keywords)))
 
-(defun orgtrello-controller-setup-properties (&optional args)
+(defun orgtrello-controller-setup-properties (&optional _args)
   "Setup `org-trello' properties according to `org-mode' setup in buffer.
 Return :ok.
 ARGS is not used."
@@ -102,7 +98,7 @@ ARGS is not used."
               ("orange" . ?o))))
     :ok))
 
-(defun orgtrello-controller-control-properties (&optional args)
+(defun orgtrello-controller-control-properties (&optional _args)
   "Org-trello needs some header buffer properties set (board id, list ids, ...).
 Return :ok if ok, or the error message if problems.
 ARGS is not used."
@@ -114,13 +110,15 @@ ARGS is not used."
         :ok
       "Setup problem.\nEither you did not connect your org-mode buffer with a trello board, to correct this:\n  * attach to a board through C-c o I or M-x org-trello-install-board-metadata\n  * or create a board from scratch with C-c o b or M-x org-trello-create-board-and-install-metadata).\nEither your org-mode's todo keyword list and your trello board lists are not named the same way (which they must).\nFor this, connect to trello and rename your board's list according to your org-mode's todo list.\nAlso, you can specify on your org-mode buffer the todo list you want to work with, for example: #+TODO: TODO DOING | DONE FAIL (hit C-c C-c to refresh the setup)")))
 
-(defun orgtrello-controller-migrate-user-setup (&optional args)
+(defun orgtrello-controller-migrate-user-setup (&optional _args)
   "Migrate user's setup file.
 From:
 - ~/.trello/config.el to ~/.emacs.d/.trello/<trello-login>.el.
 - Also the names of the constants have changed to *consumer-key* to
   org-trello-consumer-key and from *access-key* to org-trello-access-key.
 ARGS is not used."
+  (defvar *consumer-key*)
+  (defvar *access-token*)
   (when (file-exists-p org-trello--old-config-dir) ;; old setup, migrate
     (-let (((consumer-key access-key)
             (if *consumer-key*
@@ -138,7 +136,7 @@ ARGS is not used."
       (delete-directory org-trello--old-config-dir 'with-contents)))
   :ok)
 
-(defun orgtrello-controller-migrate-user-buffer (&optional args)
+(defun orgtrello-controller-migrate-user-buffer (&optional _args)
   "Migrate user's setup file according to latest development.
 ARGS is not used."
   (when (orgtrello-buffer-to-migrate-p)
@@ -170,7 +168,7 @@ Return such account name."
    "Select org-trello account (TAB to complete): "
    accounts))
 
-(defun orgtrello-controller-set-account (&optional args)
+(defun orgtrello-controller-set-account (&optional _args)
   "Set the org-trello account.
 ARGS is not used."
   (let ((user-account-elected
@@ -185,7 +183,7 @@ ARGS is not used."
     (orgtrello-setup-set-user-logged-in user-account-elected)
     :ok))
 
-(defun orgtrello-controller-load-keys (&optional args)
+(defun orgtrello-controller-load-keys (&optional _args)
   "Load the credentials keys from the configuration file.
 ARGS is not used."
   (let ((user-config-file (orgtrello-controller-config-file)))
@@ -193,7 +191,7 @@ ARGS is not used."
         :ok
       "Setup problem - Problem during credentials loading (consumer-key and read/write access-token) - C-c o i or M-x org-trello-install-key-and-token")))
 
-(defun orgtrello-controller-control-keys (&optional args)
+(defun orgtrello-controller-control-keys (&optional _args)
   "Check `org-trello-consumer-key' and `org-trello-access-token' are set.
 Returns :ok if everything is ok, or the error message if problems.
 ARGS is not used."
@@ -264,7 +262,7 @@ BUFFER-NAME to specify the buffer with which we currently work."
       (orgtrello-data-put-entity-id marker current)
       (eval (orgtrello-proxy-delete-entity current)))))
 
-(defun orgtrello-controller--indent-card (entity)
+(defun orgtrello-controller--indent-card (_entity)
   "Indent properly the card information (whatever the ENTITY is)."
   (orgtrello-buffer-indent-card-description)
   (orgtrello-buffer-indent-card-data)
@@ -281,7 +279,7 @@ BUFFER-NAME to specify the buffer with which we currently work."
    'orgtrello-controller-sync-card-to-trello
    (current-buffer)))
 
-(defun orgtrello-controller-sync-card-to-trello (full-meta &optional buffer-name)
+(defun orgtrello-controller-sync-card-to-trello (_full-meta &optional buffer-name)
   "Do the actual card creation/update - from card to item.
 FULL-META is actually dismissed and recomputed here.
 BUFFER-NAME is the buffer on to which act."
@@ -356,7 +354,7 @@ DATA is a list of (board-id &rest buffer-name point-start)."
   "Retrieve the full cards from DATA.
 DATA is a list of (archive-cards board-id &rest buffer-name point-start).
 Return the initial list + the full cards."
-  (-let* (((archive-cards board-id &rest) data)
+  (-let* (((_archive-cards board-id) data)
           (cards (-> board-id
                      orgtrello-api-get-full-cards
                      (orgtrello-query-http-trello 'sync))))
@@ -365,7 +363,7 @@ Return the initial list + the full cards."
 (defun orgtrello-controller--sync-buffer-with-archived-and-trello-cards (data)
   "Update buffer at point with DATA.
 DATA is a list of (cards archive-cards board-id buffername) in this order."
-  (-let (((trello-cards trello-archived-cards _ buffer-name &rest) data))
+  (-let (((trello-cards trello-archived-cards _ buffer-name) data))
     ;; first archive the cards that needs to be
     (orgtrello-log-msg orgtrello-log-debug
                        "Archived trello-cards: %S"
@@ -384,7 +382,7 @@ DATA is a list of (cards archive-cards board-id buffername) in this order."
 
 (defun orgtrello-controller--after-sync-buffer-with-trello-cards (data)
   "Given the state DATA, save the buffer and return at initial point."
-  (-let (((_ _ _ buffer-name board-name point-start) data))
+  (-let (((_ _ _ buffer-name _board-name point-start) data))
     (orgtrello-buffer-save-buffer buffer-name)
     (goto-char point-start)))
 
@@ -440,10 +438,10 @@ Beware, this will block Emacs as the request is synchronous."
 The ENTITY-STRUCTURE is self contained.
 Entities at first position, adjacency list in second position.
 Synchronization is done here."
-  (lexical-let ((entities             (car entities-adjacencies))
-                (entities-adjacencies entities-adjacencies)
-                (card-computations))
-    (maphash (lambda (id entity)
+  (let ((entities             (car entities-adjacencies))
+        (entities-adjacencies entities-adjacencies)
+        (card-computations))
+    (maphash (lambda (_id entity)
                (when (and (orgtrello-data-entity-card-p entity)
                           (eq :ok
                               (orgtrello-controller--entity-mandatory-name-ok-p
@@ -515,7 +513,7 @@ DATA is a list of (card-meta buffer-name point-start)."
 (defun orgtrello-controller--sync-buffer-with-trello-card (data)
   "Sync the buffer with DATA.
 DATA is a list of (full-card card-meta buffer-name point-start)."
-  (-let (((trello-card _ buffer-name &rest) data))
+  (-let (((trello-card _ buffer-name) data))
     (orgtrello-log-msg orgtrello-log-debug "trello-card: %S" trello-card)
     (->> trello-card
          orgtrello-data-to-org-trello-card
@@ -524,11 +522,11 @@ DATA is a list of (full-card card-meta buffer-name point-start)."
 
 (defun orgtrello-controller--after-sync-buffer-with-trello-card (data)
   "Given the state DATA, save the buffer and return at initial point."
-  (-let (((_ _ buffer-name card-name point-start) data))
+  (-let (((_ _ buffer-name _card-name point-start) data))
     (orgtrello-buffer-save-buffer buffer-name)
     (goto-char point-start)))
 
-(defun orgtrello-controller-sync-card-from-trello (full-meta &optional buffer-name)
+(defun orgtrello-controller-sync-card-from-trello (_full-meta &optional buffer-name)
   "Entity FULL-META synchronization (with its structure) from `trello'.
 BUFFER-NAME is the actual buffer to work on."
   (let* ((point-start (point))
@@ -581,7 +579,7 @@ SYNC flag permit to synchronize the http query."
 (defun orgtrello-controller--archive-that-card (data)
   "Archive the card present in the DATA structure.
 DATA is a list of (card-meta card-name buffer-name point-start)."
-  (-let (((card-meta card-name &rest) data))
+  (-let (((card-meta) data))
     (-> card-meta
         orgtrello-data-entity-id
         orgtrello-api-archive-card
@@ -590,7 +588,7 @@ DATA is a list of (card-meta card-name buffer-name point-start)."
 
 (defun orgtrello-controller--sync-buffer-with-archive (data) ;; org archive
   "Update buffer with archive DATA."
-  (-let (((_ _ card-name buffer-name point-start) data))
+  (-let (((_ _ _card-name buffer-name point-start) data))
     (with-current-buffer buffer-name
       (goto-char point-start)
       (org-archive-subtree))
@@ -900,7 +898,7 @@ DATA is a list (buffername)."
 (defun orgtrello-controller--choose-board-id (data)
   "Choose the board-id routine.
 DATA is a list of (user-logged-in boards buffername)"
-  (-let (((user-logged-in boards &rest) data))
+  (-let (((_user-logged-in boards) data))
     (-> boards
         orgtrello-controller--name-id
         orgtrello-controller-choose-board
@@ -918,7 +916,7 @@ DATA is a list of (board-id user-logged-in boards buffername)."
 (defun orgtrello-controller--update-buffer-with-board-metadata (data)
   "Update properties in buffer from DATA.
 DATA is a list of (board board-id user-logged-in boards buffername)."
-  (-let* (((board board-id user-logged-in &rest) data)
+  (-let* (((board board-id user-logged-in) data)
           (members
            (->> board
                 orgtrello-data-entity-memberships
@@ -959,12 +957,11 @@ DATA is a list and the buffername is the last element of it."
 (defun orgtrello-controller--close-board (data)
   "Close the board present in DATA.
 DATA is a list of (board-id user boards buffername)."
-  (-let (((board-id _ _ &rest) data))
-    (-> data
-        car
-        orgtrello-api-close-board
-        (orgtrello-query-http-trello 'sync))
-    data))
+  (-> data
+      car
+      orgtrello-api-close-board
+      (orgtrello-query-http-trello 'sync))
+  data)
 
 (defun orgtrello-controller-do-close-board ()
   "Command to install the list boards."
@@ -1001,13 +998,13 @@ DATA is a list of (board-id user boards buffername)."
 
 (defun orgtrello-controller--close-lists (list-ids)
   "Given a list of ids LIST-IDS, close those lists."
-  (-> (--map (lexical-let ((list-id it))
+  (-> (--map (let ((list-id it))
                (orgtrello-query-http-trello
                 (orgtrello-api-close-list it)
                 nil
-                (lambda (response) (orgtrello-log-msg orgtrello-log-info
-                                                 "Closed list with id %s"
-                                                 list-id))
+                (lambda (_response) (orgtrello-log-msg orgtrello-log-info
+                                                  "Closed list with id %s"
+                                                  list-id))
                 (lambda ())))
              list-ids)
       (orgtrello-proxy-execute-async-computations
@@ -1049,14 +1046,14 @@ DATA is a list of (org-keywords buffername)."
 (defun orgtrello-controller--create-new-board (data)
   "Create the new board from DATA.
 DATA is a list of (board-name board-desc org-keywords buffername)."
-  (-let (((board-name board-desc &rest) data))
+  (-let (((board-name board-desc) data))
     (-> (orgtrello-controller--create-board board-name board-desc)
         (cons data))))
 
 (defun orgtrello-controller--close-board-default-lists (data)
   "Compute the default board's lists and close them.
 DATA is a list of (user board board-name board-desc org-keywords buffername)."
-  (-let (((_ board &rest) data))
+  (-let (((_ board) data))
     (->> board
          orgtrello-data-entity-id
          orgtrello-controller--list-board-lists
@@ -1067,16 +1064,16 @@ DATA is a list of (user board board-name board-desc org-keywords buffername)."
 (defun orgtrello-controller--create-user-lists-to-board (data)
   "Create the user's board list from DATA.
 DATA is a list of (user board board-name board-desc org-keywords buffername)."
-  (-let* (((_ board _ _ org-keywords &rest) data)
+  (-let* (((_ board _ _ org-keywords) data)
           (board-id (orgtrello-data-entity-id board)))
     (orgtrello-controller--create-lists-according-to-keywords board-id org-keywords)
     (cons board-id data)))
 
 (defun orgtrello-controller-do-create-board-and-install-metadata ()
   "Command to create a board and the lists."
-  (lexical-let ((org-keywords (orgtrello-buffer-filtered-kwds))
-                (buffer-name  (current-buffer))
-                (prefix-log   "Create board and install metadata..."))
+  (let ((org-keywords (orgtrello-buffer-filtered-kwds))
+        (buffer-name  (current-buffer))
+        (prefix-log   "Create board and install metadata..."))
     (orgtrello-deferred-eval-computation
      (list org-keywords buffer-name)
      '('orgtrello-controller--input-new-board-information       ;; [[keyword] buffer-name]
@@ -1211,7 +1208,7 @@ Dict Id String -> [String]"
     (delete-region region-start region-end)))
 
 (defun orgtrello-controller--do-delete-card-comment (card-meta
-                                                     &optional buffer-name)
+                                                     &optional _buffer-name)
   "Delete the comment at point from the CARD-META in the BUFFER-NAME."
   (save-excursion
     (let ((card-id (-> card-meta
@@ -1247,7 +1244,7 @@ Dict Id String -> [String]"
 (defun orgtrello-controller--update-card-comment (data)
   "Update card comment from DATA.
 DATA is a list of (card-id comment-id comment-text buffername)."
-  (-let (((card-id comment-id comment-text &rest) data))
+  (-let (((card-id comment-id comment-text) data))
     (-> card-id
         (orgtrello-api-update-card-comment comment-id comment-text)
         (orgtrello-query-http-trello 'sync)
@@ -1367,9 +1364,9 @@ BOARD-USERS-NAME-ID is a map of username to id."
 (defun orgtrello-controller-add-comment (card-id)
   "Pop up a window for the user to input a comment.
 CARD-ID is the needed id to create the comment."
-  (lexical-let ((card-id-to-sync card-id)
-                (return-buffer-name (current-buffer))
-                (return-point (point)))
+  (let ((card-id-to-sync card-id)
+        (return-buffer-name (current-buffer))
+        (return-point (point)))
     (window-configuration-to-register orgtrello-controller-register)
     (delete-other-windows)
     (org-switch-to-buffer-other-window org-trello--title-buffer-information)
@@ -1403,7 +1400,7 @@ Then, gets back to the BUFFER-NAME at POINT."
 (defun orgtrello-controller--add-comment-to-card (data)
   "Given a DATA structure, add the comment to the card.
 DATA is a list (comment card-id prefix-log)."
-  (-let (((comment card-id &rest) data))
+  (-let (((comment card-id) data))
     (-> card-id
         (orgtrello-api-add-card-comment comment)
         (orgtrello-query-http-trello 'sync)
@@ -1419,7 +1416,7 @@ DATA is not used actually."
 (defun orgtrello-controller--extract-comment-and-close-popup (data)
   "Extract the comment from the buffer.
 DATA is the structure holding the buffer to work with."
-  (-let (((_ buffer-name point &rest) data)
+  (-let (((_ buffer-name point) data)
          (comment (orgtrello-buffer-trim-input-comment (buffer-string))))
     (orgtrello-controller-close-popup buffer-name point)
     (cons comment data)))

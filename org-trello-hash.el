@@ -1,4 +1,4 @@
-;;; org-trello-hash.el --- Hash manipulation functions (the base data structure)
+;;; org-trello-hash.el --- Hash manipulation functions (the base data structure)  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'org-trello-log)
+(require 'dash)
 
 (defun orgtrello-hash-empty-hash ()
   "Empty hash table with test 'equal."

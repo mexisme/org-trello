@@ -1,4 +1,4 @@
-;;; org-trello-date.el --- Date manipulation for org-trello-buffer
+;;; org-trello-date.el --- Date manipulation for org-trello-buffer  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'org-macs)
 
 (defun orgtrello-date-convert-org-date-to-trello-date (org-date)
   "Convert the ORG-DATE deadline into a trello one."

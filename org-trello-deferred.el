@@ -1,4 +1,4 @@
-;;; org-trello-deferred.el --- Deferred computations in org-trello
+;;; org-trello-deferred.el --- Deferred computations in org-trello  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'org-trello-log)
 
 (defun orgtrello-deferred--compute-deferred-computation (initial-state
                                                          fns

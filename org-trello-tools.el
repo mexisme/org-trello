@@ -1,4 +1,4 @@
-;;; org-trello-tools.el --- Load the namespaces of org-trello in a dev or test context
+;;; org-trello-tools.el --- Load the namespaces of org-trello in a dev or test context  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

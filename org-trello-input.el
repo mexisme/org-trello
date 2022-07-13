@@ -1,4 +1,4 @@
-;;; org-trello-input.el --- User input related functions.
+;;; org-trello-input.el --- User input related functions.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -22,7 +22,9 @@
 ;;; Code:
 
 (require 'org-trello-log)
+(require 'org-trello-setup)
 (require 'ido)
+(require 'dash)
 (require 's)
 
 (defalias 'orgtrello-input-read-string 'read-string
@@ -39,8 +41,10 @@ PROMPT is the prefix string displayed for input.
 :: () -> String"
   (let ((value nil))
     (while (or (null value) (string= "" value))
-      (setq value (-> (orgtrello-input-read-string prompt) s-trim)))
+      (setq value (-> (orgtrello-input-read-string prompt) (s-trim))))
     value))
+
+(declare-function helm-comp-read "ext:helm-mode")
 
 (defun orgtrello-input-read-string-completion (prompt choices)
   "Read input from user with completing mechanism.

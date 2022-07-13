@@ -1,4 +1,4 @@
-;;; org-trello-utils.el --- Utilities namespace
+;;; org-trello-utils.el --- Utilities namespace  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

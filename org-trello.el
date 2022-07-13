@@ -1,4 +1,4 @@
-;;; org-trello.el --- Minor mode to synchronize org-mode buffer and trello board
+;;; org-trello.el --- Minor mode to synchronize org-mode buffer and trello board  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013-2021 Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -107,10 +107,6 @@ Please consider upgrading Emacs." emacs-version)
 
 (when (version< emacs-version "24") (error org-trello-error-install-msg))
 
-(if (version< emacs-version "27")
-    (eval-when-compile (require 'cl))
-  (eval-when-compile (require 'cl-lib)))
-
 ;; Dependency on internal Emacs libs
 (require 'org)
 (require 'json)
@@ -182,10 +178,8 @@ when NOLOG-P is specified, no output log after computation."
      prefix-log)))                             ;; error log if need be
 
 (defun org-trello-log-strict-checks-and-do (action-label
-                                            action-fn
-                                            &optional with-save-flag)
-  "Given an ACTION-LABEL and an ACTION-FN, execute sync action.
-If WITH-SAVE-FLAG is set, will do a buffer save and reload the org setup."
+                                            action-fn)
+  "Given an ACTION-LABEL and an ACTION-FN, execute sync action."
   (orgtrello-action-msg-controls-or-actions-then-do
    action-label
    '(orgtrello-controller-migrate-user-setup
@@ -603,12 +597,6 @@ This does not support regular expression."
                            (string= (expand-file-name name) buffer-file-name))
                          org-trello-files)
               (org-trello-mode))))
-
-(defcustom org-trello-add-tags t
-  "Add trello colors to org tags list?"
-  :type 'boolean
-  :require 'org-trello
-  :group 'org-trello)
 
 (orgtrello-log-msg orgtrello-log-debug "org-trello loaded!")
 

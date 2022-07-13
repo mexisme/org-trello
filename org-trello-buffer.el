@@ -1,4 +1,4 @@
-;;; org-trello-buffer.el --- Manipulation functions of org-trello buffer
+;;; org-trello-buffer.el --- Manipulation functions of org-trello buffer  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2021  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -20,10 +20,6 @@
 
 ;;; Commentary:
 ;;; Code:
-
-(if (version< emacs-version "27")
-    (eval-when-compile (require 'cl))
-  (eval-when-compile (require 'cl-lib)))
 
 (require 'org-trello-setup)
 (require 'org-trello-utils)
@@ -864,8 +860,8 @@ ENTITIES and ADJACENCIES provide information on card's structure."
 
 (defun orgtrello-buffer--compute-string-for-checksum (region)
   "Given a REGION, compute the string to checksum."
-  (lexical-let ((region region)
-                (buffer-name (current-buffer)))
+  (let ((region region)
+        (buffer-name (current-buffer)))
     (with-temp-buffer
       (apply 'insert-buffer-substring (cons buffer-name region))
       (let ((org-startup-with-latex-preview nil))
@@ -935,16 +931,16 @@ COMPUTE-REGION-FN is the region computation function (takes no parameter)."
                nil t))
         t))))
 
+(defun orgtrello-buffer--replace-str (str new)
+  "Replace all strings matching STR with NEW.
+The cursor moves along the search."
+  (goto-char (point-min))
+  (while (search-forward str nil t)
+    (replace-match new)))
+
 (defun orgtrello-buffer-migrate-buffer ()
   "Migrate the old properties to the new one.
 The cursor remains at current position once the computation is done."
-  (defun orgtrello-buffer--replace-str (str new)
-    "Replace all strings matching STR with NEW.
-The cursor moves along the search."
-    (goto-char (point-min))
-    (while (search-forward str nil t)
-      (replace-match new)))
-
   (save-excursion
     (with-current-buffer (current-buffer)
       (let ((case-fold-search t)

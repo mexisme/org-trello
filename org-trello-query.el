@@ -1,4 +1,4 @@
-;;; org-trello-query.el --- HTTP client namespace.
+;;; org-trello-query.el --- HTTP client namespace.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -25,6 +25,7 @@
 (require 'org-trello-setup)
 (require 'org-trello-data)
 (require 'request-deferred)
+(require 'dash)
 
 (defconst orgtrello-query--trello-url "https://api.trello.com/1"
   "The needed prefix url for trello.")

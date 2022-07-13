@@ -1,4 +1,4 @@
-;;; org-trello-tools-test.el ---
+;;; org-trello-tools-test.el ---  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

@@ -1,4 +1,4 @@
-;;; org-trello-proxy.el --- `Proxy' namespace
+;;; org-trello-proxy.el --- `Proxy' namespace  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2021  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -29,10 +29,6 @@
 
 ;;; Commentary:
 ;;; Code:
-
-(if (version< emacs-version "27")
-    (eval-when-compile (require 'cl))
-  (eval-when-compile (require 'cl-lib)))
 
 (require 'org-trello-log)
 (require 'org-trello-setup)
@@ -113,11 +109,11 @@ ENTITIES-ADJACENCIES provides (entities adjacencies) list.
 ENTITIES is the map of all objects.
 ADJACENCIES is the map of children's list per entity.
 All maps are indexed by trello or marker id."
-  (lexical-let ((buffer-name  (orgtrello-data-entity-buffername entity-to-sync))
-                (marker-id    (orgtrello-data-entity-id-or-marker entity-to-sync))
-                (entity-name  (orgtrello-data-entity-name entity-to-sync))
-                (entities-adj entities-adjacencies)
-                (entity-not-yet-synced entity-to-sync))
+  (let ((buffer-name  (orgtrello-data-entity-buffername entity-to-sync))
+        (marker-id    (orgtrello-data-entity-id-or-marker entity-to-sync))
+        (entity-name  (orgtrello-data-entity-name entity-to-sync))
+        (entities-adj entities-adjacencies)
+        (entity-not-yet-synced entity-to-sync))
 
     (lambda (response)
       (let* ((entity-synced (request-response-data response))
@@ -364,10 +360,10 @@ MAP-DISPATCH-FN is a map of function taking the one parameter ENTITY."
 
 (defun orgtrello-proxy--standard-delete-success-callback (entity-to-del)
   "Return a callback function able to deal with the ENTITY-TO-DEL deletion."
-  (lexical-let ((entry-buffer-name (orgtrello-data-entity-buffername entity-to-del))
-                (marker            (orgtrello-data-entity-id entity-to-del))
-                (level             (orgtrello-data-entity-level entity-to-del)))
-    (lambda (response)
+  (let ((entry-buffer-name (orgtrello-data-entity-buffername entity-to-del))
+        (marker            (orgtrello-data-entity-id entity-to-del))
+        (level             (orgtrello-data-entity-level entity-to-del)))
+    (lambda (_response)
       (with-current-buffer entry-buffer-name
         (save-excursion
           (when (orgtrello-proxy--getting-back-to-marker marker)
@@ -422,8 +418,8 @@ Display LOG-OK or LOG-KO depending on the result."
 
 (defun orgtrello-proxy-delete-entity (entity)
   "Compute the delete action to remove ENTITY."
-  (lexical-let ((query-map (orgtrello-proxy--compute-delete-query-request entity))
-                (entity-to-delete entity))
+  (let ((query-map (orgtrello-proxy--compute-delete-query-request entity))
+        (entity-to-delete entity))
     (if (hash-table-p query-map)
         (orgtrello-query-http-trello
          query-map
@@ -440,8 +436,8 @@ Display LOG-OK or LOG-KO depending on the result."
 (defun orgtrello-proxy-sync-entity (entity entities-adjacencies)
   "Compute the sync action on entity ENTITY.
 Use ENTITIES-ADJACENCIES to provide further information."
-  (lexical-let ((query-map (orgtrello-proxy--compute-sync-query-request entity))
-                (entity-to-sync entity))
+  (let ((query-map (orgtrello-proxy--compute-sync-query-request entity))
+        (entity-to-sync entity))
     (if (hash-table-p query-map)
         (orgtrello-query-http-trello
          query-map

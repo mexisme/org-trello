@@ -1,4 +1,4 @@
-;;; org-trello-data.el --- org-trello data access functions
+;;; org-trello-data.el --- org-trello data access functions  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

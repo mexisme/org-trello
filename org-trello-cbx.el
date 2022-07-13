@@ -1,4 +1,4 @@
-;;; org-trello-cbx.el --- Manipulation functions of checkbox to add some behavior to org's checkbox
+;;; org-trello-cbx.el --- Manipulation functions of checkbox to add some behavior to org's checkbox  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

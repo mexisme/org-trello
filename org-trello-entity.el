@@ -1,4 +1,4 @@
-;;; org-trello-entity.el --- Predicates to determine if we are currently on a card/checklist/item + some default movments
+;;; org-trello-entity.el --- Predicates to determine if we are currently on a card/checklist/item + some default movments  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2020  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

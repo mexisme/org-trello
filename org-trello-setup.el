@@ -1,4 +1,4 @@
-;;; org-trello-setup.el --- Constants + Variables setup for org-trello.
+;;; org-trello-setup.el --- Constants + Variables setup for org-trello.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -35,12 +35,8 @@
 (defconst org-trello-consumer-key nil
   "Id representing the user.")
 
-(defvar *consumer-key*) ;; for retro compatibility
-
 (defconst org-trello-access-token nil
   "Read/write access token to use trello on behalf of the user.")
-
-(defvar *access-token*)  ;; for retro compatibility
 
 (defconst org-trello--card-level 1
   "Card level.")
@@ -166,8 +162,9 @@ Please, do not hesitate to provide a better idea or a better implementation.
 If nil, the default, the sync to trello will be limited to what's really changed
 \(except for the position\).  So the entity's position in trello's board can be
 slightly different than the one from the buffer."
-  :group 'org-trello
-  :version "0.7.1")
+  :type 'boolean
+  :version "0.7.1"
+  :group 'org-trello)
 
 ;; make variable buffer-local
 (mapc (lambda (var)
@@ -278,7 +275,7 @@ Also supercede the old prefix keybinding with the new one."
   "Remove the default org-trello bindings.
 PREV-MODE-PREFIX-KEYBIND old prefix keybinding
 COMMAND-BINDING-DOC the list of commands to install."
-  (--map (-let (((command binding _) it))
+  (--map (-let (((_command binding) it))
            (define-key org-trello-mode-map
              (kbd (concat prev-mode-prefix-keybind " " binding)) nil))
          command-binding-doc))
@@ -304,6 +301,10 @@ COMMAND-BINDING-DOC the list of commands to install."
         :org-keyword-trello-list-names org-trello--org-keyword-trello-list-names
         :org-keyword-id-name org-trello--hmap-list-orgkeyword-id-name))
 
+(defconst org-trello-default-prefix-keybinding "C-c o"
+  "Default org-trello's prefix keybinding.")
+
+;;;###autoload
 (defun orgtrello-setup-set-binding (current-prefix-binding-variable
                                     prefix-keybinding)
   "Install the default org-trello mode keybinding.
@@ -319,14 +320,11 @@ PREFIX-KEYBINDING is the new binding."
        org-trello-interactive-command-binding-couples)
       (set current-prefix-binding-variable prefix-keybinding))))
 
-(defconst org-trello-default-prefix-keybinding "C-c o"
-  "Default org-trello's prefix keybinding.")
-
 ;;;###autoload
 (defcustom org-trello-current-prefix-keybinding nil
   "The default prefix keybinding to execute org-trello commands."
   :type 'string
-  :require 'org-trello
+  :require 'org-trello-setup
   :set 'orgtrello-setup-set-binding
   :group 'org-trello)
 
@@ -339,8 +337,7 @@ Default is the native ido mechanism.
 Other possibilities is helm but it's up to you to install the dependencies.
 \(require 'helm\)
 \(custom-set-variables '\(org-trello-input-completion-mechanism 'helm\)\)"
-  :type'(choice (const default) (const helm))
-  :require 'org-trello
+  :type '(choice (const default) (const helm))
   :group 'org-trello)
 
 (defalias '*ORGTRELLO/MODE-PREFIX-KEYBINDING*
@@ -380,7 +377,12 @@ Other possibilities is helm but it's up to you to install the dependencies.
   "Some action can be dangerous removing entity for example.
 This custom determine if the user wants to be asked confirmation
 before doing some of those sensitive actions."
-  :require 'org-trello
+  :type 'boolean
+  :group 'org-trello)
+
+(defcustom org-trello-add-tags t
+  "Add trello colors to org tags list?"
+  :type 'boolean
   :group 'org-trello)
 
 (provide 'org-trello-setup)

@@ -1,4 +1,4 @@
-;;; org-trello-api.el --- Interface functions to Trello API
+;;; org-trello-api.el --- Interface functions to Trello API  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 

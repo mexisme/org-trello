@@ -1,4 +1,4 @@
-;;; org-trello-action.el --- Reference some action functions
+;;; org-trello-action.el --- Reference some action functions  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2017  Antoine R. Dumont (@ardumont) <antoine.romain.dumont@gmail.com>
 
@@ -99,7 +99,7 @@ if NOLOG-P is set, this will not log anything."
   (orgtrello-action-controls-or-actions-then-do control-or-action-fns
                                                 fn-to-execute nolog-p))
 
-(defun orgtrello-action--too-deep-level (entity)
+(defun orgtrello-action--too-deep-level (_entity)
   "Given an ENTITY with level too deep, display an error message about it.
 ENTITY is actually not used (implementation detail)."
   "Your arborescence depth is too deep. We only support up to depth 3.
